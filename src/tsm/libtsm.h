@@ -163,9 +163,11 @@ struct tsm_screen_attr {
 	uint8_t bb;			/* background blue */
 	unsigned int bold : 1;		/* bold character */
 	unsigned int underline : 1;	/* underlined character */
+	unsigned int italic : 1;	/* italicized character */
 	unsigned int inverse : 1;	/* inverse colors */
 	unsigned int protect : 1;	/* cannot be erased */
 	unsigned int blink : 1;		/* blinking character */
+	unsigned int cursor : 1;	/* cursor character */
 };
 
 typedef int (*tsm_screen_draw_cb) (struct tsm_screen *con,

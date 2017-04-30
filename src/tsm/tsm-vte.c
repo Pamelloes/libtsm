@@ -293,6 +293,28 @@ static uint8_t color_palette_solarized_white[COLOR_NUM][3] = {
 	[COLOR_BACKGROUND]    = { 238, 232, 213 }, /* light grey */
 };
 
+static uint8_t color_palette_os_x[COLOR_NUM][3] = {
+	[COLOR_BLACK]         = {   0,   0,   0 }, /* black */
+	[COLOR_RED]           = { 153,   0,   0 }, /* red */
+	[COLOR_GREEN]         = {   0, 166,   0 }, /* green */
+	[COLOR_YELLOW]        = { 153, 153,   0 }, /* yellow */
+	[COLOR_BLUE]          = {   0,   0, 178 }, /* blue */
+	[COLOR_MAGENTA]       = { 178,   0, 178 }, /* magenta */
+	[COLOR_CYAN]          = {   0, 166, 178 }, /* cyan */
+	[COLOR_LIGHT_GREY]    = { 191, 191, 191 }, /* light grey */
+	[COLOR_DARK_GREY]     = { 102, 102, 102 }, /* dark grey */
+	[COLOR_LIGHT_RED]     = { 229,   0,   0 }, /* light red */
+	[COLOR_LIGHT_GREEN]   = {   0, 217,   0 }, /* light green */
+	[COLOR_LIGHT_YELLOW]  = { 229, 229,   0 }, /* light yellow */
+	[COLOR_LIGHT_BLUE]    = {   0,   0, 255 }, /* light blue */
+	[COLOR_LIGHT_MAGENTA] = { 229,   0, 229 }, /* light magenta */
+	[COLOR_LIGHT_CYAN]    = {   0, 229, 229 }, /* light cyan */
+	[COLOR_WHITE]         = { 229, 229, 229 }, /* white */
+
+	[COLOR_FOREGROUND]    = {   0,   0,   0 }, /* black */
+	[COLOR_BACKGROUND]    = { 255, 255, 255 }, /* light grey */
+};
+
 static uint8_t (*get_palette(struct tsm_vte *vte))[3]
 {
 	if (!vte->palette_name)
@@ -304,6 +326,8 @@ static uint8_t (*get_palette(struct tsm_vte *vte))[3]
 		return color_palette_solarized_black;
 	if (!strcmp(vte->palette_name, "solarized-white"))
 		return color_palette_solarized_white;
+	if (!strcmp(vte->palette_name, "os-x"))
+		return color_palette_os_x;
 
 	return color_palette;
 }
@@ -557,9 +581,11 @@ static void reset_state(struct tsm_vte *vte)
 	copy_bcolor(&vte->saved_state.cattr, &vte->def_attr);
 	vte->saved_state.cattr.bold = 0;
 	vte->saved_state.cattr.underline = 0;
+	vte->saved_state.cattr.italic = 0;
 	vte->saved_state.cattr.inverse = 0;
 	vte->saved_state.cattr.protect = 0;
 	vte->saved_state.cattr.blink = 0;
+	vte->saved_state.cattr.cursor = 0;
 }
 
 static void save_state(struct tsm_vte *vte)
@@ -651,7 +677,7 @@ void tsm_vte_hard_reset(struct tsm_vte *vte)
 
 static void send_primary_da(struct tsm_vte *vte)
 {
-	vte_write(vte, "\e[?60;1;6;9;15c", 17);
+	vte_write(vte, "\e[?60;1;6;9;15c", 15);
 }
 
 /* execute control character (C0 or C1) */
@@ -1048,11 +1074,15 @@ static void csi_attribute(struct tsm_vte *vte)
 			copy_bcolor(&vte->cattr, &vte->def_attr);
 			vte->cattr.bold = 0;
 			vte->cattr.underline = 0;
+			vte->cattr.italic = 0;
 			vte->cattr.inverse = 0;
 			vte->cattr.blink = 0;
 			break;
 		case 1:
 			vte->cattr.bold = 1;
+			break;
+		case 3:
+			vte->cattr.italic = 1;
 			break;
 		case 4:
 			vte->cattr.underline = 1;
@@ -1065,6 +1095,9 @@ static void csi_attribute(struct tsm_vte *vte)
 			break;
 		case 22:
 			vte->cattr.bold = 0;
+			break;
+		case 23:
+			vte->cattr.italic = 0;
 			break;
 		case 24:
 			vte->cattr.underline = 0;

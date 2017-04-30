@@ -136,8 +136,11 @@ tsm_age_t tsm_screen_draw(struct tsm_screen *con, tsm_screen_draw_cb draw_cb,
 			}
 
 			if (k == cur_y + 1 && j == cur_x &&
-			    !(con->flags & TSM_SCREEN_HIDE_CURSOR))
-				attr.inverse = !attr.inverse;
+			    !(con->flags & TSM_SCREEN_HIDE_CURSOR)) {
+				attr.cursor = 1;
+			} else {
+				attr.cursor = 0;
+			}
 
 			/* TODO: do some more sophisticated inverse here. When
 			 * INVERSE mode is set, we should instead just select
