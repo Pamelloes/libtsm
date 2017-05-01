@@ -586,6 +586,7 @@ static void reset_state(struct tsm_vte *vte)
 	vte->saved_state.cattr.protect = 0;
 	vte->saved_state.cattr.blink = 0;
 	vte->saved_state.cattr.cursor = 0;
+	vte->saved_state.cattr.selection = 0;
 }
 
 static void save_state(struct tsm_vte *vte)
